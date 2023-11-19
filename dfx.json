@@ -1,0 +1,18 @@
+{
+  "canisters": {
+    "multi_minter": {
+      "main": "src/minter_api.mo",
+      "candid": "src/minter.did",
+      "type": "motoko",
+      "optimize": "cycles"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": "mops sources"
+    }
+  },
+  "dfx": "0.15.1",
+  "version": 1
+}

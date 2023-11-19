@@ -1,0 +1,4 @@
+[dependencies]
+base = "0.10.1"
+mrr = "https://github.com/research-ag/motoko-lib#23fc75e4b37ab01230f6a5bd4ce678b3d06ed104"
+vector = "0.2.0"

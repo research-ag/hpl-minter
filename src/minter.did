@@ -1,0 +1,98 @@
+type AssetId = nat;
+type VirtualAccountId = nat;
+type SharedMintTokenData =
+  record {
+    assetId: AssetId;
+    icrc1Ledger: principal;
+    symbol: text;
+  };
+
+type AssetId_Result = variant {
+  err : variant { UnknownToken };
+  ok : AssetId;
+};
+type UsableBalance_Result = 
+ variant {
+   err: opt variant {UnknownToken;};
+   ok: nat;
+ };
+type RegisterFt_Result = variant {
+  ok : SharedMintTokenData;
+  err : variant {
+    AlreadyExists;
+    CallLedgerError;
+    FeeError;
+    NoSpace;
+    PermissionDenied;
+  };
+};
+type TokenInfo_Result =
+  variant {
+    err: opt variant {UnknownToken;};
+    ok: SharedMintTokenData;
+  };
+
+type MintResult = variant {
+  err : variant {
+    CallLedgerError;
+    DeletedVirtualAccount;
+    InsufficientBalance;
+    MismatchInAsset;
+    MismatchInRemotePrincipal;
+    TooLargeFtQuantity;
+    TooLargeVirtualAccountId;
+    UnknownPrincipal;
+    UnknownToken;
+    UnknownVirtualAccount;
+  };
+  ok : nat;
+};
+
+type BurnResult = variant {
+  err : variant {
+    CallIcrc1LedgerError;
+    CallLedgerError;
+    DeletedVirtualAccount;
+    IcrcGenericError;
+    IcrcInsufficientFunds;
+    IcrcTemporarilyUnavailable;
+    InsufficientFunds;
+    MismatchInAsset;
+    MismatchInRemotePrincipal;
+    TooLargeFtQuantity;
+    TooLargeVirtualAccountId;
+    TooLowQuantity;
+    UnknownPrincipal;
+    UnknownToken;
+    UnknownVirtualAccount;
+  };
+  ok : nat;
+};
+
+type WithdrawCreditResult = variant {
+  err : variant {
+    CallIcrc1LedgerError;
+    IcrcGenericError;
+    IcrcInsufficientFunds;
+    IcrcTemporarilyUnavailable;
+    NoCredit;
+    UnknownToken;
+  };
+  ok : nat;
+};
+
+service : (opt principal) -> {
+  // init
+  init : () -> ();
+  // query
+  assetId : (text) -> (AssetId_Result) query;
+  tokenInfo: (text) -> (TokenInfo_Result) query;
+  usableBalance : (text, principal) -> (UsableBalance_Result) query;
+  principalToSubaccount : (principal) -> (opt blob) query;
+  // update
+  registerFt : (principal, text, nat8, text) -> (RegisterFt_Result);
+  notify : (text, principal) -> ();
+  mint : (text, record { principal; VirtualAccountId }, variant { amount : nat; max }) -> (MintResult);
+  burnAndWithdraw : (text, VirtualAccountId, nat, record { principal; opt blob }) -> (BurnResult);
+  withdrawCredit : (text, record { principal; opt blob }) -> (WithdrawCreditResult);
+};
